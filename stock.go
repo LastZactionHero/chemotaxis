@@ -9,3 +9,5 @@ type Stock struct {
 	RowID  uint
 	ColID  uint
 }
+
+// VALUE - returns latest quote

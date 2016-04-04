@@ -36,10 +36,15 @@ func loadDatabase(filename string) *gorm.DB {
 		panic("failed to connect database")
 	}
 
-	if db.HasTable("stocks") {
-		db.DropTable("stocks")
+	clearTables := []string{"stocks", "quotes"}
+	for _, table := range clearTables {
+		if db.HasTable(table) {
+			db.DropTable(table)
+		}
 	}
+
 	db.CreateTable(&Stock{})
+	db.CreateTable(&Quote{})
 	return db
 }
 
@@ -54,15 +59,3 @@ func seedData(db *gorm.DB) [][]string {
 	}
 	return gradient
 }
-
-// stock
-//   symbol
-//   sector
-//   value
-//   row_id
-//   col_id
-//
-// quote
-//   amount
-//   datetime
-//   stock_id
