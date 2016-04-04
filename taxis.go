@@ -3,32 +3,35 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
-	"fmt"
 	"os"
 
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"
 )
 
-// Stock represents a single stock symbol
-type Stock struct {
-	gorm.Model
-	Symbol string
-	RowID  uint
-	ColID  uint
-}
+// GradientCSVFilePath path to gradient stock grid csv
+const GradientCSVFilePath = "./data/sp500_grid.csv"
 
-var db *gorm.DB
+// DBFilename SQLite Database filename
+const DBFilename = "db/development.db"
+
+// DBFilenameTest SQLite Database filename
+const DBFilenameTest = "db/test.db"
+
+// var db *gorm.DB
+var gradient Gradient
 
 func main() {
-	db = loadDatabase()
+	db := loadDatabase(DBFilename)
 
-	loadGradient()
-	printGradient()
+	seedData(db)
+
+	gradient.Load(db)
+	gradient.Print()
 }
 
-func loadDatabase() *gorm.DB {
-	db, err := gorm.Open("sqlite3", "test.db")
+func loadDatabase(filename string) *gorm.DB {
+	db, err := gorm.Open("sqlite3", filename)
 	if err != nil {
 		panic("failed to connect database")
 	}
@@ -40,8 +43,8 @@ func loadDatabase() *gorm.DB {
 	return db
 }
 
-func loadGradient() [][]string {
-	f, _ := os.Open("./data/sp500_grid.csv")
+func seedData(db *gorm.DB) [][]string {
+	f, _ := os.Open(GradientCSVFilePath)
 	r := csv.NewReader(bufio.NewReader(f))
 	gradient, _ := r.ReadAll()
 	for rowID, row := range gradient {
@@ -50,28 +53,6 @@ func loadGradient() [][]string {
 		}
 	}
 	return gradient
-}
-
-func printGradient() {
-	var stocks []Stock
-	db.Order("row_id, col_id").Find(&stocks)
-
-	var lastRowID uint
-	for _, stock := range stocks {
-		if stock.RowID > lastRowID {
-			lastRowID = stock.RowID
-			fmt.Printf("\n")
-		}
-
-		fmt.Printf(stock.Symbol)
-		if stock.RowID > lastRowID {
-			lastRowID = stock.RowID
-			fmt.Printf("\n")
-		} else {
-			fmt.Printf("\t| ")
-		}
-	}
-	fmt.Printf("\n\n")
 }
 
 // stock
