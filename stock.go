@@ -10,4 +10,9 @@ type Stock struct {
 	ColID  uint
 }
 
-// VALUE - returns latest quote
+// Value latest quote amount
+func (s *Stock) Value(db *gorm.DB) float64 {
+	var quote Quote
+	db.Order("id DESC").Where("stock_id = ?", s.ID).First(&quote)
+	return quote.Amount
+}

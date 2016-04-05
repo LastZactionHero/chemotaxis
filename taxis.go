@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"encoding/csv"
+	"fmt"
 	"os"
 
 	"github.com/jinzhu/gorm"
@@ -28,6 +29,13 @@ func main() {
 
 	gradient.Load(db)
 	gradient.Print()
+
+	loadQuoteSample(db)
+
+	var stock Stock
+	db.Where("symbol = ?", "AAPL").First(&stock)
+	fmt.Println(stock.Symbol)
+	fmt.Println(stock.Value(db))
 }
 
 func loadDatabase(filename string) *gorm.DB {
