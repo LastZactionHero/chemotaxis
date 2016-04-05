@@ -16,3 +16,12 @@ func (s *Stock) Value(db *gorm.DB) float64 {
 	db.Order("id DESC").Where("stock_id = ?", s.ID).First(&quote)
 	return quote.Amount
 }
+
+// FindStock returns a stock by symbol, nil if not found
+func FindStock(db *gorm.DB, symbol string) *Stock {
+	var stock Stock
+	if db.Where("symbol = ?", symbol).First(&stock).RecordNotFound() {
+		return nil
+	}
+	return &stock
+}

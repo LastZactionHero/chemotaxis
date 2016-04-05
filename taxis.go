@@ -32,8 +32,7 @@ func main() {
 
 	loadQuoteSample(db)
 
-	var stock Stock
-	db.Where("symbol = ?", "AAPL").First(&stock)
+	stock := FindStock(db, "AAPL")
 	fmt.Println(stock.Symbol)
 	fmt.Println(stock.Value(db))
 }

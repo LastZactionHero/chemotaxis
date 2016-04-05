@@ -20,9 +20,7 @@ func loadQuoteSample(db *gorm.DB) {
 		symbol := row[0]
 		amount, _ := strconv.ParseFloat(row[1], 64)
 
-		var stock Stock
-		db.Where("symbol = ?", symbol).First(&stock)
-
-		SaveQuote(db, stock, amount)
+		stock := FindStock(db, symbol)
+		SaveQuote(db, *stock, amount)
 	}
 }
