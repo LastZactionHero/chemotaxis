@@ -9,6 +9,7 @@ func TestHoldingValue(t *testing.T) {
 	amount := 50.24
 	SaveQuote(db, s, amount)
 
+	// Value Value on Holding
 	var holdingCount uint = 20
 	holding := Holding{Stock: s, Count: holdingCount}
 
@@ -16,5 +17,12 @@ func TestHoldingValue(t *testing.T) {
 	value := holding.Value(db)
 	if value != expectedValue {
 		t.Error("Expected value", expectedValue, "got", value)
+	}
+
+	// Holding with No Stock
+	invalidHolding := Holding{}
+	value = invalidHolding.Value(db)
+	if value != 0 {
+		t.Error("Expected value 0, got", value)
 	}
 }
